@@ -4,7 +4,6 @@ const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 3000;
 const mysqlPool = require("./config/database");
-const user = require("./routes/user.route");
 const chats = require("./routes/chats.route");
 
 app.use(express.json()); 
@@ -15,7 +14,7 @@ app.get("/", (req: any, res: any) => {
 });
 
 
-app.use('/api/users', user);
+// app.use('/api/users', user);
 app.use('/api/chats', chats);
 
 
