@@ -23,39 +23,84 @@
    width: 32px;
   }
 
-  .history-btn {
-    position: relative; /* Needed for tooltip positioning */
+  .header-btn-section{
+    display: flex;
+    gap: 0 4px;
+  }
+
+  .tooltip-btn {
+    position: relative;
     height: 32px;
     width: 32px;
-    background: #f0f0f0; /* optional, just to visualize */
+    background: #f0f0f0;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+
+    &::after {
+      position: absolute;
+      bottom: 120%;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #333;
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease-in-out;
+      font-size: 12px;
+      content: attr(data-tooltip);
+    }
+
+    &:hover::after {
+      opacity: 1;
+    }
   }
 
-  /* Tooltip text */
-  .history-btn::after {
-    content: "History"; 
-    position: absolute;
-    bottom: 125%; 
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #333;
-    color: #fff;
-    padding: 4px 8px;
-    border-radius: 6px;
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s ease-in-out;
-    font-size: 12px;
+  .no-messages{
+    text-align: center;
+    color: #666;
+    padding: 20px;
   }
+
+
+  // .history-btn {
+  //   position: relative; /* Needed for tooltip positioning */
+  //   height: 32px;
+  //   width: 32px;
+  //   background: #f0f0f0; /* optional, just to visualize */
+  //   border-radius: 50%;
+  //   display: flex;
+  //   align-items: center;
+  //   justify-content: center;
+  //   cursor: pointer;
+  // }
+
+  // /* Tooltip text */
+  // .history-btn::after {
+    
+  //   position: absolute;
+  //   bottom: 120%; 
+  //   left: 50%;
+  //   transform: translateX(-50%);
+  //   background-color: #333;
+  //   color: #fff;
+  //   padding: 4px 8px;
+  //   border-radius: 6px;
+  //   white-space: nowrap;
+  //   opacity: 0;
+  //   pointer-events: none;
+  //   transition: opacity 0.2s ease-in-out;
+  //   font-size: 12px;
+  // }
   
-  .history-btn:hover::after {
-    opacity: 1;
-  }
+  // .history-btn:hover::after {
+  //   opacity: 1;
+  // }
 
   .chatbot-btn {
     background: #5D3FD3;
@@ -84,10 +129,40 @@
   }
 
   .chatbot-messages {
-    min-height: 60vh;
+    min-height: 62vh;
     padding: 0 16px ;
     margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
+
+
+  .bot-message {
+    padding: 0 12px;
+    border-radius: 10px;
+    background: #5d3fd3;
+    color: #fff;
+    align-self: flex-start; 
+  }
+
+  .user-message{
+    align-self: flex-end;
+    background-color: #fff;
+    color: black;
+    padding: 0 12px;
+    border-radius: 10px;
+  }
+
+
+  // .chatbot-message-box {
+  //   // background: #e9e4fb; // lightest violet you asked earlier
+  //   // padding: 8px 12px;
+  //   right: 0;
+  //   border-radius: 8px;
+  //   margin: 4px 0;
+  //   max-width: 70%;
+  // }
 
   .chatbot-footer {
     display: flex;
@@ -113,4 +188,41 @@
       cursor: pointer;
     }
   }
+
+
+  .typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: 20px;
+  }
+
+  .typing-indicator span {
+    width: 6px;
+    height: 6px;
+    background: #5d3fd3; /* your violet */
+    border-radius: 50%;
+    display: inline-block;
+    animation: bounce 1.2s infinite ease-in-out;
+  }
+
+  .typing-indicator span:nth-child(1) {
+    animation-delay: 0s;
+  }
+  .typing-indicator span:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  .typing-indicator span:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+
+  @keyframes bounce {
+    0%, 80%, 100% {
+      transform: scale(0);
+    }
+    40% {
+      transform: scale(1);
+    }
+  }
+
 }

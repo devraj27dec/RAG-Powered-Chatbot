@@ -7,34 +7,28 @@ const {sendPrompt} = require("../config/bot");
  */
 
 
+async function chatHandler(req: any, res: any) {
+  let { sessionId, message } = req.body;
 
-async function chatHandler(req:any, res:any) {
-    let { userId, message } = req.body;
+  console.log("Received chat request:", { sessionId, message });
 
-  console.log("Received chat request:", { userId, message });
-
-  userId = Number(userId);
-
-  if (!userId || !message) {
-    return res.status(400).json({ error: "userId and message required" });
+  if (!sessionId || !message) {
+    return res.status(400).json({ error: "sessionId and message required" });
   }
 
   try {
-    console.log("Processing message for user:", userId);
-    console.log("Message content:", message);
-
     const botResponse = await sendPrompt(message);
-    console.log("Bot response:", botResponse);
 
-   const connection = await mysqlPool.getConnection();
+    const connection = await mysqlPool.getConnection();
     try {
-        await connection.execute(
-        "INSERT INTO chats (user_id, user_message, bot_response) VALUES (?, ?, ?)",
-        [userId, message, botResponse]
-        );
+      await connection.execute(
+        "INSERT INTO chats (session_id, user_message, bot_response) VALUES (?, ?, ?)",
+        [sessionId, message, botResponse]
+      );
     } finally {
-        connection.release();
+      connection.release();
     }
+
     res.json({ reply: botResponse });
   } catch (err) {
     console.error("Chat handler error:", err);
@@ -43,16 +37,16 @@ async function chatHandler(req:any, res:any) {
 }
 
 
+
 const getChats = async (req: any, res: any) => {
   try {
-    const userId = req.params.userId || req.body.userId; 
+    const sessionId = req.params.sessionId || req.body.sessionId;
 
     const db = await mysqlPool.getConnection();
     const query =
-      "SELECT * FROM chats WHERE user_id = ? ORDER BY created_at DESC LIMIT 50";
+      "SELECT * FROM chats WHERE session_id = ? ORDER BY created_at ASC";
 
-    const [rows] = await db.execute(query, [userId]);
-
+    const [rows] = await db.execute(query, [sessionId]);
     db.release();
 
     res.status(200).json(rows);
@@ -62,4 +56,18 @@ const getChats = async (req: any, res: any) => {
   }
 };
 
-module.exports = { chatHandler, getChats }; 
+
+const deleteChats = async (req: any, res: any) => {
+  const sessionId = req.params.sessionId || req.body.sessionId; 
+
+  const db = await mysqlPool.getConnection();
+  const query = "DELETE FROM chats WHERE session_id = ?";
+  const [result] = await db.execute(query, [sessionId]);
+  db.release();
+
+  res.status(200).json({ message: "Chats deleted successfully", result });
+};
+
+
+
+module.exports = { chatHandler, getChats , deleteChats }; 
