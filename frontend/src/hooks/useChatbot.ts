@@ -9,7 +9,9 @@ type Message = {
 
 export const useChatbot = () => {
   const sessionId = useMemo(() => uuidv4(), []);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([
+     { sender: "bot", text: "How can I help you?" }
+  ]);
   const [inputMessage, setInputMessage] = useState("");
   const [loading, setLoading] = useState(false);
    const [showHistory, setShowHistory] = useState(false);

@@ -53,7 +53,6 @@ export default function Chatbot() {
                 <RiResetLeftFill />
               </button>
             </div>
-            
           </div>
           <div className="chatbot-messages">
             {showHistory ? (

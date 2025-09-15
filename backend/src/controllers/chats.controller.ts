@@ -1,5 +1,5 @@
 const mysqlPool = require("../config/database");
-const {sendPrompt} = require("../config/bot");
+const {sendPrompt , generateEmbedding} = require("../config/bot");
 
 /**
  * @param {import('express').Request} req
@@ -9,7 +9,6 @@ const {sendPrompt} = require("../config/bot");
 
 async function chatHandler(req: any, res: any) {
   let { sessionId, message } = req.body;
-
   console.log("Received chat request:", { sessionId, message });
 
   if (!sessionId || !message) {
@@ -17,26 +16,32 @@ async function chatHandler(req: any, res: any) {
   }
 
   try {
+    // Call LLM for bot response
     const botResponse = await sendPrompt(message);
+
+    // Generate embedding
+    const embedding = await generateEmbedding(message);
+
+    // If empty (quota exceeded), save null instead
+    const embeddingToStore = embedding.length ? JSON.stringify(embedding) : null;
 
     const connection = await mysqlPool.getConnection();
     try {
       await connection.execute(
-        "INSERT INTO chats (session_id, user_message, bot_response) VALUES (?, ?, ?)",
-        [sessionId, message, botResponse]
+        "INSERT INTO chats (session_id, user_message, bot_response, embedding) VALUES (?, ?, ?, ?)",
+        [sessionId, message, botResponse, embeddingToStore]
       );
     } finally {
       connection.release();
     }
 
+    
     res.json({ reply: botResponse });
   } catch (err) {
     console.error("Chat handler error:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 }
-
-
 
 const getChats = async (req: any, res: any) => {
   try {
